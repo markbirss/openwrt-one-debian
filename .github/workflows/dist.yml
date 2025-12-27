@@ -1,0 +1,42 @@
+---
+name: Create binaries for distribution
+on:
+  push:
+    branches-ignore:
+      - "gh-readonly-queue/**"
+  pull_request:
+  merge_group:
+jobs:
+  build-kernel:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:trixie-slim
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+        with:
+          path: linux
+          repository: https://github.com/sjoerdsimons/linux.git
+          ref: sjoerd/mtk-openwrt-one-integration
+      - run: |
+          apt update
+          apt install -y devscripts \
+              build-essential \
+              crossbuild-essential-arm64 \
+              bc \
+              bison \
+              ccache \
+              flex \
+              rsync \
+              kmod \
+              cpio \
+              libdw-dev \
+              libelf-dev \
+              libssl-dev \
+              libssl-dev:arm64
+      - run: CONFIG=openwrt-one-kernel-config ./scripts/build-kernel.sh
+      - name: Upload release binaries
+        uses: actions/upload-artifact@v6
+        with:
+          name: debs
+          path: *.deb

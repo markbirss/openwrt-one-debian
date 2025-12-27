@@ -1,0 +1,174 @@
+{{ $suite := or .suite "trixie" }}
+{{ $kernel := or .kernel "debian" }}
+
+architecture: arm64
+
+actions:
+  - action: mmdebstrap
+    description: Bootstrap Debian {{ $suite }}
+    suite: {{ $suite }}
+    components:
+      - main
+      - non-free-firmware
+    mirror: https://deb.debian.org/debian
+    variant: minbase
+    dpkg-opts:
+      - "path-exclude=/usr/share/man/*"
+      - "path-include=/usr/share/man/"
+      - "path-exclude=/usr/share/locale/*"
+      - "path-include=/usr/share/locale/locale.alias"
+      - "path-exclude=/usr/share/doc/*"
+      - "path-exclude=/usr/lib/modules/*/kernel/sound/*"
+      - "path-exclude=/usr/lib/modules/*/kernel/drivers/gpu/*"
+      - "path-exclude=/usr/lib/modules/*/kernel/drivers/media/*"
+      - "path-exclude=/usr/lib/modules/*/kernel/drivers/scsi/*"
+      - "path-include=/usr/lib/modules/*/kernel/drivers/scsi/scsi_mod*"
+      - "path-include=/usr/lib/modules/*/kernel/drivers/scsi/scsi_common*"
+      - "path-include=/usr/lib/modules/*/kernel/drivers/scsi/sd_mod*"
+      - "path-include=/usr/lib/modules/*/kernel/drivers/scsi/sg*"
+      - "path-exclude=/usr/lib/modules/*/kernel/drivers/sound/*"
+      - "path-exclude=/usr/lib/modules/*/kernel/drivers/net/*"
+      - "path-include=/usr/lib/modules/*/kernel/drivers/net/phy/*"
+      - "path-include=/usr/lib/modules/*/kernel/drivers/net/media/*"
+      - "path-include=/usr/lib/modules/*/kernel/drivers/net/pcs/*"
+      - "path-include=/usr/lib/modules/*/kernel/drivers/net/ethernet/*"
+      - "path-include=/usr/lib/modules/*/kernel/drivers/net/ethernet/mediatek/*"
+      - "path-include=/usr/lib/modules/*/kernel/drivers/net/wireless/mediatek/*"
+
+  - action: overlay
+    description: Setup apt repositories
+    source: overlays/debian-backports
+
+  - action: run
+    description: Set hostname to recovery-{{ $suite }}
+    command: echo "recovery-{{ $suite }}" > ${ROOTDIR}/etc/hostname
+
+  - action: run
+    description: Set root password to root
+    chroot: true
+    command: echo "root:root" | chpasswd
+
+  - action: apt
+    description: Install systemd
+    recommends: false
+    packages:
+      - systemd
+      - systemd-repart
+      - systemd-resolved
+      - systemd-sysv
+      - systemd-timesyncd
+      - udev
+
+  - action: apt
+    description: Install other tools
+    recommends: false
+    update: false
+    packages:
+      - iproute2
+      - procps
+      - firmware-mediatek
+      - firmware-misc-nonfree
+
+  - action: apt
+    description: Install initramfs tools
+    recommends: false
+    packages:
+      - initramfs-tools
+
+  - action: overlay
+    description: Disable initramfs creation
+    source: overlays/disable-initramfs
+
+{{ if eq $kernel "local" }}
+  - action: overlay
+    description: Put in local debian kernel
+    source: local-kernel
+    destination: /kernel
+
+  - action: run
+    chroot: true
+    command: |
+      apt -y --no-install-recommends install /kernel/*.deb
+      rm -rf /kernel
+
+{{ else if eq $kernel  "debian" }}
+  - action: apt
+    description: Install kernel
+    recommends: false
+    packages:
+      - linux-image-arm64/trixie-backports
+{{ else }}
+   {{ fail "Kernel not set to a valid value" }}
+{{ end }}
+
+  - action: run
+    description: init should be /init for initramfs
+    chroot: true
+    command: ln -s /sbin/init /init
+
+  - action: overlay
+    description: Configure networking
+    source: overlays/network
+
+  - action: run
+    description: Enable network services
+    chroot: true
+    command: |
+      systemctl enable systemd-networkd
+      systemctl enable systemd-timesyncd
+
+  - action: run
+    description: Move boot artifacts out of rootfs
+    chroot: false
+    command: |
+      mv -v ${ROOTDIR}/boot/vmlinuz* ${ARTIFACTDIR}/Image
+      cp -v ${ROOTDIR}/lib/linux-image-*/mediatek/mt7981b-openwrt-one.dtb ${ARTIFACTDIR}
+      rm ${ROOTDIR}/vmlinu*
+      rm ${ROOTDIR}/initrd*
+
+  - action: run
+    description: Clean up rootfs
+    chroot: true
+    command: |
+      # Drop apt caches
+      rm -rf /var/cache/apt/*
+      rm -f /var/lib/apt/lists/*_*
+      # Drop dtb's - loaded externally
+      rm -rf /lib/linux-image-*
+      rm -rf /lib/modules/*/dtb
+
+  - action: run
+    description: Print image size
+    chroot: true
+    command: "du -scm --exclude='/proc/*' /*"
+
+  - action: run
+    description: Create cpio archive
+    chroot: false
+    command: |
+      cd ${ROOTDIR}
+      find . -print | cpio -oH newc >  ${ARTIFACTDIR}/recovery.cpio
+
+  - action: run
+    description: Compressing cpio archive
+    chroot: false
+    command: |
+      zstd -f --rm ${ARTIFACTDIR}/recovery.cpio
+
+  - action: run
+    description: Compressing kernel
+    chroot: false
+    command: |
+      gzip -f ${ARTIFACTDIR}/Image
+
+  - action: run
+    description: Building fit image
+    chroot: false
+    command:
+      mkimage -E -f auto
+      -A arm64
+      -O Linux -a 0x44000000 -e 0x44000000
+      -d ${ARTIFACTDIR}/Image.gz
+      -b ${ARTIFACTDIR}/mt7981b-openwrt-one.dtb
+      -i ${ARTIFACTDIR}/recovery.cpio.zst
+      ${ARTIFACTDIR}/recovery.fit
