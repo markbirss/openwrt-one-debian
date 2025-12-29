@@ -82,7 +82,7 @@ jobs:
   build-recovery-image:
     runs-on: ubuntu-latest
     container:
-      image: gchr.io/go-debos/debos:main
+      image: ghcr.io/go-debos/debos:main
     steps:
       - uses: actions/checkout@v6
       - run: debos --print-recipe recovery/recovery.yaml
