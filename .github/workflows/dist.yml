@@ -81,6 +81,8 @@ jobs:
           path: "*.deb"
   build-recovery-image:
     runs-on: ubuntu-latest
+    needs:
+      - build-kernel
     container:
       image: ghcr.io/go-debos/debos:main
     steps:
