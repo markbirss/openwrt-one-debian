@@ -85,6 +85,13 @@ jobs:
       image: ghcr.io/go-debos/debos:main
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v7
+        with:
+          name: kernel
+      - run: |
+          mkdir -p recovery/local-kernel
+          rm linux-image*dbg*deb
+          cp -v linux-image*_*.deb recovery/local-kernel
       - run: debos --print-recipe recovery/recovery.yaml
       - name: recovery image
         uses: actions/upload-artifact@v6
