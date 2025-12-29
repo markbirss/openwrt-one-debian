@@ -46,6 +46,10 @@ actions:
     description: Set hostname to recovery-{{ $suite }}
     command: echo "recovery-{{ $suite }}" > ${ROOTDIR}/etc/hostname
 
+  - action: overlay
+    description: Setup base config
+    source: overlays/config
+
   - action: run
     description: Set root password to root
     chroot: true
