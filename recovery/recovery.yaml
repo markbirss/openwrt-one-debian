@@ -70,6 +70,7 @@ actions:
       - iproute2
       - procps
       - iwd
+      - iw
       - firmware-mediatek
       - firmware-misc-nonfree
 
@@ -120,6 +121,7 @@ actions:
     command: |
       systemctl enable systemd-networkd
       systemctl enable systemd-timesyncd
+      systemctl enable iwd
 
   - action: run
     description: Move boot artifacts out of rootfs
