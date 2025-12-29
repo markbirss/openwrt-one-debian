@@ -7,6 +7,44 @@ on:
   pull_request:
   merge_group:
 jobs:
+  build-bootloaders:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:trixie-slim
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
+        with:
+          path: arm-trusted-firmware
+          repository: https://github.com/mtk-openwrt/arm-trusted-firmware.git
+          ref: mtksoc-20250711
+      - uses: actions/checkout@v6
+        with:
+          path: u-boot
+          repository: sjoerdsimons/u-boot
+          ref: mtk/openwrt-one
+      - run: |
+          apt update;
+          apt install -y \
+              build-essential \
+              crossbuild-essential-arm64 \
+              arm-trusted-firmware-tools \
+              u-boot-tools \
+              xz-utils \
+              bison
+              flex \
+              libssl-dev \
+              libgnutls28-dev
+      - run: ./scripts/build-atf.sh
+      - run: ./scripts/build-u-boot.sh
+      - name: Upload bootloader binaries
+        uses: actions/upload-artifact@v6
+        with:
+          name: bootloader
+          path: |
+            "*.bin"
+            "*.raw"
+            "*.fip"
   build-kernel:
     runs-on: ubuntu-latest
     container:
