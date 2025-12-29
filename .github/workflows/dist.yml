@@ -85,6 +85,7 @@ jobs:
       - build-kernel
     container:
       image: ghcr.io/go-debos/debos:main
+      options: --device=/dev/kvm
     steps:
       - uses: actions/checkout@v6
       - uses: actions/download-artifact@v7
@@ -94,7 +95,7 @@ jobs:
           mkdir -p recovery/local-kernel
           rm linux-image*dbg*deb
           cp -v linux-image*_*.deb recovery/local-kernel
-      - run: debos --print-recipe recovery/recovery.yaml
+      - run: debos --fakemachine-backend=kvm --print-recipe recovery/recovery.yaml
       - name: recovery image
         uses: actions/upload-artifact@v6
         with:
