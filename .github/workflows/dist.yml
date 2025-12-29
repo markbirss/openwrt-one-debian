@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           path: arm-trusted-firmware
-          repository: https://github.com/mtk-openwrt/arm-trusted-firmware.git
+          repository: mtk-openwrt/arm-trusted-firmware
           ref: mtksoc-20250711
       - uses: actions/checkout@v6
         with:
