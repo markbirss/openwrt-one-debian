@@ -23,6 +23,7 @@ actions:
 
   - action: apt
     description: Install systemd
+    recommends: true
     packages:
       - systemd
       - systemd-repart
@@ -34,6 +35,7 @@ actions:
   - action: apt
     description: Install other tools
     update: false
+    recommends: true
     packages:
       - hostapd
       - iw
@@ -70,6 +72,10 @@ actions:
     description: Configure networking
     source: overlays/network
 
+  - action: overlay
+    description: Misc configuration
+    source: overlays/config
+
   - action: run
     description: Enable network services
     chroot: true
@@ -84,9 +90,12 @@ actions:
     mountpoints:
       - mountpoint: /
         partition: root
+        options:
+          - x-systemd.growfs
     partitions:
       - name: root
         partlabel: root
+        # root arm64
         parttype: b921b045-1df0-41c3-af44-4c6f280d3fae
         fs: ext4
         start: 1MiB
