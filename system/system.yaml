@@ -120,7 +120,7 @@ actions:
       echo 'root:!unprovisioned' | chpasswd -c NONE
       rm -f /etc/hostname
       rm -f /etc/hosts
-      rm -f /etc/machine-id
+      echo uninitialized > /etc/machine-id
       rm -f /etc/ssh/ssh_host_*
 
   - action: run
