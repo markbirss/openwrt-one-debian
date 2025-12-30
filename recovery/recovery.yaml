@@ -38,6 +38,10 @@ actions:
       - "path-include=/usr/lib/modules/*/kernel/drivers/net/ethernet/mediatek/*"
       - "path-include=/usr/lib/modules/*/kernel/drivers/net/wireless/mediatek/*"
       - "path-exclude=/usr/lib/udev/hwdb.d/*"
+      - "path-exclude=/usr/lib/firmware/"
+      - "path-include=/usr/lib/firmware/airoha"
+      - "path-include=/usr/lib/firmware/mediatek/mt7981*"
+      - "path-include=/usr/lib/firmware/mediatek/mt7915*"
 
   - action: overlay
     description: Setup apt repositories
