@@ -113,11 +113,12 @@ jobs:
       - uses: actions/download-artifact@v7
         with:
           name: installer
+          path: download
       - run: |
           apt update
           apt install -y device-tree-compiler
       - run: |
-          cp -v installer recovery/overlays/installer/usr/local/bin
+          cp -v download/installer recovery/overlays/installer/usr/local/bin
           mkdir -p recovery/local-kernel
           rm linux-image*dbg*deb
           cp -v linux-image*_*.deb recovery/local-kernel
