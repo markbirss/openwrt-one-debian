@@ -198,7 +198,7 @@ jobs:
           git push origin :latest || true
       - run: >
           gh release create latest
-            --prerelease
-            --generate-notes
-            --notes-file .github/workflows/dist-notes.md
-            --target $GITHUB_SHA *.bin *.ubi *.zst *.bmap
+          --prerelease
+          --generate-notes
+          --notes-file .github/workflows/dist-notes.md
+          --target $GITHUB_SHA *.bin *.ubi *.zst *.bmap
