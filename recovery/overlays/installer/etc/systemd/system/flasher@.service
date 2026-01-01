@@ -7,7 +7,7 @@ Before=serial-getty@%i.service
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/local/bin/installer
+ExecStart=/usr/local/bin/flasher
 StandardInput=tty-force
 StandardOutput=tty
 StandardError=tty
@@ -16,5 +16,5 @@ TTYReset=yes
 TTYVHangup=yes
 
 [Install]
-WantedBy=installer.target
+WantedBy=flasher.target
 

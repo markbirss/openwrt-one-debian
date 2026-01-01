@@ -8,7 +8,7 @@ on:
   merge_group:
   workflow_dispatch:
 jobs:
-  build-installer:
+  build-flasher:
     runs-on: ubuntu-latest
     container:
       image: rust:slim-trixie
@@ -20,12 +20,12 @@ jobs:
       - run: |
           apt update
           apt install -y gcc-aarch64-linux-gnu
-      - run: cd installer ; cargo build --release --target aarch64-unknown-linux-gnu
-      - name: installer binary
+      - run: cd flasher ; cargo build --release --target aarch64-unknown-linux-gnu
+      - name: flasher binary
         uses: actions/upload-artifact@v6
         with:
-          name: installer
-          path: installer/target/aarch64-unknown-linux-gnu/release/installer
+          name: flasher
+          path: flasher/target/aarch64-unknown-linux-gnu/release/flasher
   build-bootloaders:
     runs-on: ubuntu-latest
     container:
@@ -102,7 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build-kernel
-      - build-installer
+      - build-flasher
     container:
       image: ghcr.io/go-debos/debos:main
       options: --device=/dev/kvm
@@ -113,13 +113,13 @@ jobs:
           name: kernel
       - uses: actions/download-artifact@v7
         with:
-          name: installer
+          name: flasher
           path: download
       - run: |
           apt update
           apt install -y device-tree-compiler
       - run: |
-          cp -v download/installer recovery/overlays/installer/usr/local/bin
+          cp -v download/flasher recovery/overlays/flasher/usr/local/bin
           mkdir -p recovery/local-kernel
           rm linux-image*dbg*deb
           cp -v linux-image*_*.deb recovery/local-kernel

@@ -1,4 +1,0 @@
-#!/bin/sh
-
-echo "Failed to replace this file with the real installer"
-exit 1

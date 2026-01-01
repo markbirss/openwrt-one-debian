@@ -135,13 +135,13 @@ actions:
       systemctl enable iwd
 
   - action: overlay
-    description: Install installer
-    source: overlays/installer
+    description: Install flasher
+    source: overlays/flasher
 
   - action: run
-    description: Ensure installer is executable
+    description: Ensure flasher is executable
     chroot: true
-    command: chmod a+x /usr/local/bin/installer
+    command: chmod a+x /usr/local/bin/flasher
 
   - action: run
     description: Move boot artifacts out of rootfs

@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo "Failed to replace this file with the real flasher"
+exit 1
