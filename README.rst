@@ -1,37 +1,37 @@
 Debian on OpenWrt One
 ======================
 
-The `Openwrt One`_ is a nice open hardware access point, running
+The `OpenWrt One`_ is a nice open hardware access point, running
 OpenWrt by default. As the hardware is reasonably powerful and expandable,
 running a more general purpose OS like Debian on it can be rather convenient.
 
 The onboard storage (NAND) flash is 256MiB, which Debian can be made to fit.
 However it's somewhat inconvenient and limiting. Luckily there is an M.2 slot
-on the board to expand the storage via e.g. an NVME, which this repo helps
+on the board to expand the storage via e.g. an NVMe, which this repo helps
 installing Debian on.  **Note** The goal here is to just make it easy to
 install an initial Debian image on the OpenWrt One. Not to provide a polished
 end-user access-point experience, like e.g.  OpenWrt provides.
 
 Requirements:
 
-* OpenWrt one
-* NVME fitted in the device
+* OpenWrt One
+* NVMe fitted in the device
 * Serial console access (front type-c port, baudrate 115200)
 * USB stick for installation
 
 All artifacts for installation steps can be downloaded from the `latest build`_
 (`openwrt*`) and should be placed on a USB stick (single FAT partition).
 
-.. _OpenWrt one: https://openwrt.org/toh/openwrt/one
+.. _OpenWrt One: https://openwrt.org/toh/openwrt/one
 .. _latest build: https://github.com/sjoerdsimons/openwrt-one-debian/releases/tag/latest
 
 Installation:
 =============
 
 The installation comes in two parts; First the NAND flash content is replaced
-with a `u-boot` capable of directly booting from NVME as well as `recovery`
-image to help with flashing the NVME and potentially debugging system issues.
-As a second step a Debian `system` image will be installed to the NVME.
+with a `u-boot` capable of directly booting from NVMe as well as `recovery`
+image to help with flashing the NVMe and potentially debugging system issues.
+As a second step a Debian `system` image will be installed to the NVMe.
 
 Flashing NAND:
 --------------
@@ -55,10 +55,10 @@ Then to flash:
 * Remove power, switch boot selector back to NAND
 
 
-Flashing NVME:
+Flashing NVMe:
 --------------
 
-Now the NVME can be flashed, also from USB.
+Now the NVMe can be flashed, also from USB.
 
 * Format a USB stick with a single FAT partition
 * Download:
@@ -70,7 +70,7 @@ For flashing the recovery image should be booted from NAND:
 
 * Power on the device
 * On first boot `Bad EC magic` messages can be shown, this can be ignored
-* If there was no OS on the NVME, the system will automatically boot the
+* If there was no OS on the NVMe, the system will automatically boot the
   recovery image. Otherwise stop U-Boot and execute `run boot_recovery`
 * On boot a small flasher UI will show up on serial console.
 * Simply select an image to flash (detected on USB drive)
