@@ -20,7 +20,7 @@ Requirements:
 * USB stick for installation
 
 All artifacts for installation steps can be downloaded from the `latest build`_
-(`openwrt*`) and should be placed on a USB stick (single FAT partition).
+(`openwrt*`) and should be placed on a USB stick (single FAT or FAT32 partition).
 
 .. _OpenWrt One: https://openwrt.org/toh/openwrt/one
 .. _latest build: https://github.com/sjoerdsimons/openwrt-one-debian/releases/tag/latest
@@ -39,7 +39,7 @@ Flashing NAND:
 To (re)flash NAND, the system is booted from NOR flash and NAND rewritten
 from USB; To do this:
 
-* Format a USB stick with a single FAT partition
+* Format a USB stick with a single FAT or FAT32 partition
 * Download and put on the stick:
 
   * openwrt-mediatek-filogic-openwrt_one-snand-preloader.bin
@@ -60,7 +60,7 @@ Flashing NVMe:
 
 Now the NVMe can be flashed, also from USB.
 
-* Format a USB stick with a single FAT partition
+* Format a USB stick with a single FAT or FAT32 partition
 * Download:
 
   * the system image (e.g. openwrt.img.zst)
