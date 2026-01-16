@@ -73,7 +73,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           path: linux
-          repository: sjoerdsimons/linux
+          repository: markbirss/linux
           ref: sjoerd/mtk-openwrt-one-integration
       - run: |
           dpkg --add-architecture arm64;
