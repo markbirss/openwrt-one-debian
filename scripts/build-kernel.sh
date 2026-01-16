@@ -8,7 +8,7 @@ fi
 
 if [ ! -d ${KERNEL} ] ; then
   git clone --depth 1 -b sjoerd/mtk-openwrt-one-integration \
-    https://github.com/sjoerdsimons/linux.git
+    https://github.com/markbirss/linux.git
 fi
 
 export ARCH=arm64
